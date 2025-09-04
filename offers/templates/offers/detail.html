@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}{{ offer.title }}{% endblock %}
+{% block content %}
+<h1>{{ offer.title }}</h1>
+<p>{{ offer.description }}</p>
+<p><strong>Location:</strong> {{ offer.latitude }}, {{ offer.longitude }}</p>
+<a href="{% url 'offers:share' offer.id %}" class="btn btn-success">Share in Chat</a>
+{% endblock %}

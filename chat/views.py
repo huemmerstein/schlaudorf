@@ -33,7 +33,7 @@ def index(request):
         form = ChatForm()
 
     q = request.GET.get('q')
-    messages_qs = ChatMessage.objects.select_related('user')
+    messages_qs = ChatMessage.objects.select_related('user','offer')
     if q:
         messages_qs = messages_qs.filter(Q(content__icontains=q) | Q(user__username__icontains=q))
     messages_qs = messages_qs.order_by('-created_at')[:50]

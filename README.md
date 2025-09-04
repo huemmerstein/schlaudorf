@@ -16,6 +16,8 @@ after two days.
 - ✅ Real‑time updates via WebSockets (Django Channels)
 - ✅ Browser notifications for new direct messages
 - ✅ Message search and filtering
+- ✅ Neighborhood help offers on an interactive map
+- ✅ Share offers directly in the chat
 - ✅ User profiles with optional avatars
 - ✅ Automated tests and GitHub Actions CI
 
@@ -47,6 +49,7 @@ install the appropriate driver.
   Create a superuser with `python manage.py createsuperuser` for full access.
 - Messages older than two days are cleaned up automatically each time the
   direct message view is accessed.
+- Create help offers via the Offers page and share them in chat.
 
 ## Development Notes
 

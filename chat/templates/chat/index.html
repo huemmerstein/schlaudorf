@@ -17,7 +17,11 @@
       <img src="{{ message.user.profile.avatar.url }}" alt="avatar" class="rounded me-2" style="width:30px;height:30px;">
     {% endif %}
     <strong>{{ message.user.username }}</strong> <small class="text-muted">{{ message.created_at|date:'Y-m-d H:i' }}</small><br/>
-    <span class="chat-message">{{ message.content }}</span>
+    {% if message.offer %}
+      {% include 'offers/_card.html' with offer=message.offer %}
+    {% else %}
+      <span class="chat-message">{{ message.content }}</span>
+    {% endif %}
   </li>
   {% empty %}
   <li class="list-group-item">No messages yet.</li>
@@ -29,7 +33,11 @@ chatSocket.onmessage = function(e){
   const data = JSON.parse(e.data);
   const li = document.createElement('li');
   li.className = 'list-group-item';
-  li.innerHTML = `<strong>${data.user}</strong><br/><span class="chat-message">${data.content}</span>`;
+  if(data.offer_html){
+    li.innerHTML = `<strong>${data.user}</strong><br/>${data.offer_html}`;
+  } else {
+    li.innerHTML = `<strong>${data.user}</strong><br/><span class="chat-message">${data.content}</span>`;
+  }
   document.getElementById('chat-list').prepend(li);
 };
 </script>

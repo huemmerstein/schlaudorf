@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),  # Login/Logout views
     path('', include('chat.urls')),  # Core chat features
+    path('offers/', include('offers.urls')),
 ]
 
 if settings.DEBUG:

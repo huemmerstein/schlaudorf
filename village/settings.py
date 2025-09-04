@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',  # WebSocket support
     'chat',  # Our chat app providing the core features
+    'offers',  # Help offers with map
 ]
 
 MIDDLEWARE = [
