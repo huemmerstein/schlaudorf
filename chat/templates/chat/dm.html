@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Direct Messages{% endblock %}
+{% block content %}
+<h1>Direct Messages</h1>
+<form method="get" class="mb-2">
+  <input type="text" name="q" value="{{ query|default:'' }}" class="form-control" placeholder="Search DMs">
+</form>
+<form method="post" class="mb-4">
+  {% csrf_token %}
+  <div class="row g-2">
+    <div class="col-md-3">{{ form.recipient }}</div>
+    <div class="col-md-7">{{ form.content }}</div>
+    <div class="col-md-2 d-grid"><button type="submit" class="btn btn-primary">Send</button></div>
+  </div>
+</form>
+<ul class="list-group" id="dm-list">
+  {% for msg in messages %}
+  <li class="list-group-item">
+    {% if msg.sender.profile.avatar %}
+      <img src="{{ msg.sender.profile.avatar.url }}" alt="avatar" class="rounded me-2" style="width:30px;height:30px;">
+    {% endif %}
+    <strong>{{ msg.sender.username }}</strong> → <strong>{{ msg.recipient.username }}</strong>
+    <small class="text-muted">{{ msg.created_at|date:'Y-m-d H:i' }}</small><br/>
+    <span class="chat-message">{{ msg.content }}</span>
+  </li>
+  {% empty %}
+  <li class="list-group-item">No direct messages.</li>
+  {% endfor %}
+</ul>
+<script>
+if (Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+const dmSocket = new WebSocket('ws://' + window.location.host + '/ws/dm/');
+dmSocket.onmessage = function(e){
+  const data = JSON.parse(e.data);
+  const li = document.createElement('li');
+  li.className = 'list-group-item';
+  li.innerHTML = `<strong>${data.user}</strong><br/><span class="chat-message">${data.content}</span>`;
+  document.getElementById('dm-list').prepend(li);
+  if (Notification.permission === 'granted') {
+    new Notification('New message from ' + data.user, {body: data.content});
+  }
+};
+</script>
+{% endblock %}

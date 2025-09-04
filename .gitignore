@@ -1,5 +1,4 @@
-backend/db.sqlite3
 __pycache__/
 *.pyc
 venv/
-staticfiles/
+*.sqlite3

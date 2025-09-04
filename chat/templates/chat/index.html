@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Village Chat{% endblock %}
+{% block content %}
+<h1>Village Chat</h1>
+<form method="get" class="mb-2">
+  <input type="text" name="q" value="{{ query|default:'' }}" class="form-control" placeholder="Search messages">
+</form>
+<form method="post" class="mb-4">
+  {% csrf_token %}
+  {{ form.content }}
+  <button type="submit" class="btn btn-primary mt-2">Send</button>
+</form>
+<ul class="list-group" id="chat-list">
+  {% for message in messages %}
+  <li class="list-group-item">
+    {% if message.user.profile.avatar %}
+      <img src="{{ message.user.profile.avatar.url }}" alt="avatar" class="rounded me-2" style="width:30px;height:30px;">
+    {% endif %}
+    <strong>{{ message.user.username }}</strong> <small class="text-muted">{{ message.created_at|date:'Y-m-d H:i' }}</small><br/>
+    {% if message.offer %}
+      {% include 'offers/_card.html' with offer=message.offer %}
+    {% else %}
+      <span class="chat-message">{{ message.content }}</span>
+    {% endif %}
+  </li>
+  {% empty %}
+  <li class="list-group-item">No messages yet.</li>
+  {% endfor %}
+</ul>
+<script>
+const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+chatSocket.onmessage = function(e){
+  const data = JSON.parse(e.data);
+  const li = document.createElement('li');
+  li.className = 'list-group-item';
+  if(data.offer_html){
+    li.innerHTML = `<strong>${data.user}</strong><br/>${data.offer_html}`;
+  } else {
+    li.innerHTML = `<strong>${data.user}</strong><br/><span class="chat-message">${data.content}</span>`;
+  }
+  document.getElementById('chat-list').prepend(li);
+};
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Offers Map{% endblock %}
+{% block content %}
+<h1>Help Offers</h1>
+<a href="{% url 'offers:create' %}" class="btn btn-primary mb-3">New Offer</a>
+<div id="map" style="height:400px;"></div>
+{{ offer_data|json_script:'offers-data' }}
+<ul class="list-group mt-3">
+  {% for offer in offers %}
+  <li class="list-group-item">
+    {% include 'offers/_card.html' with offer=offer %}
+  </li>
+  {% empty %}
+  <li class="list-group-item">No offers yet.</li>
+  {% endfor %}
+</ul>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+zCWVb2Zyk+Dh6Z9erjvWbbXDpUe1koRaSPTf0Q9o=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZ2mt3GOfyH6zzAo+iAa7m3pqtGA=" crossorigin=""></script>
+<script>
+  const map = L.map('map').setView([50, 10], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+  const data = JSON.parse(document.getElementById('offers-data').textContent);
+  data.forEach(o => {
+    L.marker([o.latitude, o.longitude]).addTo(map).bindPopup(`<b>${o.title}</b><br/>${o.description}`);
+  });
+</script>
+{% endblock %}
