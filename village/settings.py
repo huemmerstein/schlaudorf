@@ -7,14 +7,33 @@ contributors, but any other database supported by Django can be configured
 here.
 """
 from pathlib import Path
+import os
+import base64
+import hashlib
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'dev-secret-key-change-me'
 
+# Derive a key for encrypting private data
+FERNET_KEY = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
+
 DEBUG = True
 
 ALLOWED_HOSTS: list[str] = []
+
+# Default categories for neighborhood help offers. Villages can adjust this
+# list to match local needs.
+OFFER_CATEGORIES = [
+    ("shopping", "Einkaufen"),
+    ("tools", "Werkzeugverleih"),
+    ("ride", "Fahrdienst"),
+    ("care", "Pflege"),
+    ("pets", "Haustiere"),
+    ("garden", "Gartenhilfe"),
+    ("plants", "Blumengießen"),
+    ("other", "Sonstiges"),
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+if os.getenv('USE_SQLITE', '1') != '1':
+    INSTALLED_APPS.append('django.contrib.gis')
+INSTALLED_APPS += [
     'channels',  # WebSocket support
     'chat',  # Our chat app providing the core features
     'offers',  # Help offers with map
@@ -59,12 +82,33 @@ TEMPLATES = [
 ASGI_APPLICATION = 'village.asgi.application'
 WSGI_APPLICATION = 'village.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.getenv('USE_SQLITE', '1') == '1':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('MYSQL_DATABASE', 'village'),
+            'USER': os.getenv('MYSQL_USER', 'village'),
+            'PASSWORD': os.getenv('MYSQL_PASSWORD', 'village'),
+            'HOST': os.getenv('MYSQL_HOST', 'localhost'),
+            'PORT': os.getenv('MYSQL_PORT', '3306'),
+        },
+        'geodata': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': os.getenv('POSTGRES_DB', 'village_geo'),
+            'USER': os.getenv('POSTGRES_USER', 'village'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'village'),
+            'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+            'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        },
+    }
+    DATABASE_ROUTERS = ['village.dbrouters.GeodataRouter']
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

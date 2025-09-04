@@ -24,7 +24,7 @@
   }).addTo(map);
   const data = JSON.parse(document.getElementById('offers-data').textContent);
   data.forEach(o => {
-    L.marker([o.latitude, o.longitude]).addTo(map).bindPopup(`<b>${o.title}</b><br/>${o.description}`);
+    L.marker([o.latitude, o.longitude]).addTo(map).bindPopup(`<b>${o.title}</b><br/><em>${o.category}</em><br/>${o.description}`);
   });
 </script>
 {% endblock %}

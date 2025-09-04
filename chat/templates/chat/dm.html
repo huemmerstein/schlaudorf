@@ -19,9 +19,10 @@
     {% if msg.sender.profile.avatar %}
       <img src="{{ msg.sender.profile.avatar.url }}" alt="avatar" class="rounded me-2" style="width:30px;height:30px;">
     {% endif %}
-    <strong>{{ msg.sender.username }}</strong> → <strong>{{ msg.recipient.username }}</strong>
+    <strong><a href="{% url 'chat:profile_detail' msg.sender.username %}">{{ msg.sender.username }}</a></strong> →
+    <strong><a href="{% url 'chat:profile_detail' msg.recipient.username %}">{{ msg.recipient.username }}</a></strong>
     <small class="text-muted">{{ msg.created_at|date:'Y-m-d H:i' }}</small><br/>
-    <span class="chat-message">{{ msg.content }}</span>
+    <span class="chat-message">{{ msg.content_plain }}</span>
   </li>
   {% empty %}
   <li class="list-group-item">No direct messages.</li>

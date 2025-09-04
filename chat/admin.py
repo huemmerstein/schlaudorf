@@ -5,4 +5,9 @@ from .models import ChatMessage, DirectMessage, Profile
 
 admin.site.register(ChatMessage)
 admin.site.register(DirectMessage)
-admin.site.register(Profile)
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "is_approved")
+    list_filter = ("is_approved",)

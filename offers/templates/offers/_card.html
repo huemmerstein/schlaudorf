@@ -1,7 +1,7 @@
 <div class="card mb-2" style="width: 18rem;">
   <div class="card-body">
     <h5 class="card-title">{{ offer.title }}</h5>
-    <p class="card-text">{{ offer.description }}</p>
+    <p class="card-text"><em>{{ offer.get_category_display }}</em><br/>{{ offer.description }}</p>
     <a href="{% url 'offers:detail' offer.id %}" class="btn btn-sm btn-primary">View</a>
   </div>
 </div>
