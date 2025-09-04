@@ -1,134 +1,66 @@
-# Schlaudorf – Open Source Nachbarschaftshilfe
+# Village Chat (Django Edition)
 
-Schlaudorf ist eine offene Nachbarschaftshilfe-Web-App. Sie kombiniert ein 
-leichtgewichtiges Frontend (HTML, Tailwind CSS, JavaScript + Leaflet) mit einem 
-Python/Django-Backend und setzt auf PostgreSQL **oder** MariaDB. Das Ziel sind 
-ca. 1.000 Benutzerinnen und Benutzer. Die Benutzerverwaltung erfolgt durch 
-Admin-Konten, alle Komponenten sind Open Source.
+This project provides a simple community chat platform built with the
+[Django](https://www.djangoproject.com/) web framework and styled with
+[Bootstrap&nbsp;5](https://getbootstrap.com/).  It offers a public chat room for the
+whole village and one‑to‑one direct messages that are automatically deleted
+after two days.
 
-Dieses README wird **nach jedem Entwicklungsschritt** erweitert und dient als 
-fortlaufende Dokumentation.
+## Features
 
----
+- ✅ Open source under the MIT license
+- ✅ User registration and login using Django's authentication system
+- ✅ Village‑wide chat room
+- ✅ Direct messages that expire after 48 hours
+- ✅ Responsive interface thanks to Bootstrap 5
+- ✅ Real‑time updates via WebSockets (Django Channels)
+- ✅ Browser notifications for new direct messages
+- ✅ Message search and filtering
+- ✅ User profiles with optional avatars
+- ✅ Automated tests and GitHub Actions CI
 
-## 1. Kernfunktionen
+## Installation on Ubuntu
 
-- Benutzerprofile mit Avatar, Fähigkeiten und Rollen (Helfer/Anfragende)
-- Hilfegesuche und Angebote mit Geokoordinaten
-- Echtzeit-Chat über WebSockets
-- Terminabsprachen mit Kalenderfunktion
-- Responsive Oberfläche mit Tailwind CSS
-- Progressive Web App (Offline-Modus & Push-Notifications)
-
----
-
-## 2. Technologie-Stack
-
-| Ebene        | Komponente                                                  |
-|--------------|-------------------------------------------------------------|
-| Backend      | Python 3, Django, Django REST Framework, Channels, Celery   |
-| Frontend     | HTML5, Tailwind CSS, Vanilla JS, Leaflet                    |
-| Datenbank    | PostgreSQL **oder** MariaDB                                 |
-| Caching/Queue| Redis (optional, für Sessions & Hintergrundjobs)            |
-| Server       | Nginx + Gunicorn                                            |
-
----
-
-## 3. Installationsanleitung (Ubuntu)
-
-1. **System vorbereiten**
-
+1. **Clone the repository**
    ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install -y python3-venv python3-dev build-essential \
-       libpq-dev libmariadb-dev-compat libmariadb-dev git curl nginx
-   ```
-
-2. **Repository klonen und virtuelle Umgebung einrichten**
-
-   ```bash
-   git clone <REPO_URL> schlaudorf
+   git clone <repository-url>
    cd schlaudorf
-   python3 -m venv venv
+   ```
+2. **Run the installation script**
+   ```bash
+   bash install.sh
+   ```
+3. **Start the development server**
+   ```bash
    source venv/bin/activate
-   pip install --upgrade pip
-   ```
-
-3. **Python-Abhängigkeiten installieren**
-
-   ```bash
-   pip install django djangorestframework psycopg[binary] mysqlclient \
-       django-cors-headers channels redis celery gunicorn whitenoise
-   ```
-
-4. **Tailwind CSS initialisieren**
-
-   ```bash
-   npm init -y
-   npm install -D tailwindcss postcss autoprefixer
-   npx tailwindcss init
-   ```
-
-5. **Datenbank vorbereiten**
-
-   - PostgreSQL
-
-     ```bash
-     sudo apt install postgresql postgresql-contrib
-     sudo -u postgres psql -c "CREATE DATABASE nachbarschaft;"
-     sudo -u postgres psql -c "CREATE USER nb_user WITH PASSWORD 'STRONG_PASSWORD';"
-     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nachbarschaft TO nb_user;"
-     ```
-
-   - MariaDB
-
-     ```bash
-     sudo apt install mariadb-server mariadb-client
-     sudo mysql -e "CREATE DATABASE nachbarschaft;"
-     sudo mysql -e "CREATE USER 'nb_user'@'localhost' IDENTIFIED BY 'STRONG_PASSWORD';"
-     sudo mysql -e "GRANT ALL PRIVILEGES ON nachbarschaft.* TO 'nb_user'@'localhost';"
-     ```
-
-6. **Django-Projekt und Apps erstellen**
-
-   ```bash
-   django-admin startproject backend
-   cd backend
-   python manage.py startapp users
-   python manage.py startapp help_requests
-   python manage.py startapp chat
-   python manage.py startapp appointments
-   mkdir templates static
-   ```
-
-7. **Migrationen ausführen und Superuser anlegen**
-
-   ```bash
-   python manage.py makemigrations
-   python manage.py migrate
-   python manage.py createsuperuser
-   ```
-
-8. **Entwicklungsserver starten**
-
-   ```bash
    python manage.py runserver
    ```
+4. Open <http://127.0.0.1:8000> in your browser and register a user.
 
----
+The default configuration uses SQLite for simplicity.  To use MariaDB or
+another database backend, adjust `DATABASES` in `village/settings.py` and
+install the appropriate driver.
 
-## 4. Weiteres Vorgehen
+## Managing Content
 
-- Chat-Consumer implementieren (Django Channels)
-- Tailwind-Komponenten für moderne UI hinzufügen
-- Terminverwaltung mit Kalenderbibliothek erweitern
-- Service Worker und Web-Push für PWA-Funktionen integrieren
-- Tests (pytest-django) und CI/CD-Pipeline einrichten
+- Visit <http://127.0.0.1:8000/admin/> to access Django's admin interface.
+  Create a superuser with `python manage.py createsuperuser` for full access.
+- Messages older than two days are cleaned up automatically each time the
+  direct message view is accessed.
 
----
+## Development Notes
 
-## 5. Lizenz
+The code is heavily commented to help newcomers.  Key files:
 
-Dieses Projekt ist Open Source und steht unter der MIT-Lizenz. Ein Verkauf 
-ist nicht vorgesehen.
+- `chat/models.py` – database models for public and private messages
+- `chat/views.py` – view logic for chat interactions and user registration
+- `templates/` – Bootstrap‑based HTML templates
 
+## Ideas for Improvement
+
+- WebSocket chat rooms beyond the global room
+- Offline storage for messages in the browser
+- Better moderation tools
+
+Contributions are welcome!  Feel free to open issues or pull requests to help
+make the project better.

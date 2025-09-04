@@ -1,0 +1,8 @@
+/* Custom styles to complement Bootstrap */
+body {
+  padding-top: 4rem;
+}
+
+.chat-message {
+  white-space: pre-line; /* Preserve line breaks in messages */
+}
