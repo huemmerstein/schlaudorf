@@ -9,7 +9,7 @@ class OfferForm(forms.ModelForm):
 
     class Meta:
         model = Offer
-        fields = ["title", "description", "latitude", "longitude"]
+        fields = ["title", "description", "category", "latitude", "longitude"]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 3}),
         }

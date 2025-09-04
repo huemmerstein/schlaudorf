@@ -16,7 +16,7 @@
     {% if message.user.profile.avatar %}
       <img src="{{ message.user.profile.avatar.url }}" alt="avatar" class="rounded me-2" style="width:30px;height:30px;">
     {% endif %}
-    <strong>{{ message.user.username }}</strong> <small class="text-muted">{{ message.created_at|date:'Y-m-d H:i' }}</small><br/>
+    <strong><a href="{% url 'chat:profile_detail' message.user.username %}">{{ message.user.username }}</a></strong> <small class="text-muted">{{ message.created_at|date:'Y-m-d H:i' }}</small><br/>
     {% if message.offer %}
       {% include 'offers/_card.html' with offer=message.offer %}
     {% else %}

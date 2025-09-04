@@ -16,13 +16,16 @@ from chat.models import ChatMessage
 def offer_map(request):
     """Display all offers on a Leaflet map."""
     offers_qs = Offer.objects.all()
-    offer_data = list(offers_qs.values("title","description","latitude","longitude"))
+    offer_data = list(offers_qs.values("title","description","category","latitude","longitude"))
     return render(request, "offers/map.html", {"offers": offers_qs, "offer_data": offer_data})
 
 
 @login_required
 def offer_create(request):
     """Create a new offer."""
+    if not request.user.profile.is_approved:
+        messages.error(request, "Account awaiting approval.")
+        return redirect("offers:map")
     if request.method == "POST":
         form = OfferForm(request.POST)
         if form.is_valid():

@@ -13,6 +13,10 @@ class ChatTests(TestCase):
     def setUp(self):
         self.u1 = User.objects.create_user('alice', password='pw')
         self.u2 = User.objects.create_user('bob', password='pw')
+        self.u1.profile.is_approved = True
+        self.u1.profile.save()
+        self.u2.profile.is_approved = True
+        self.u2.profile.save()
 
     def test_direct_message_prune(self):
         dm = DirectMessage.objects.create(sender=self.u1, recipient=self.u2, content='hi')

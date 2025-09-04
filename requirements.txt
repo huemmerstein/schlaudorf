@@ -1,3 +1,6 @@
 Django>=4.2,<5.0
 channels>=4.0
 Pillow
+cryptography
+psycopg2-binary
+mariadb

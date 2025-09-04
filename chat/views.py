@@ -17,6 +17,9 @@ from .models import ChatMessage, DirectMessage, Profile
 def index(request):
     """Display the global chat room and handle new messages."""
     if request.method == 'POST':
+        if not request.user.profile.is_approved:
+            messages.error(request, 'Account awaiting approval.')
+            return redirect('chat:index')
         form = ChatForm(request.POST)
         if form.is_valid():
             msg = ChatMessage.objects.create(user=request.user, content=form.cleaned_data['content'])
@@ -46,6 +49,9 @@ def direct(request):
     DirectMessage.prune_old()  # Remove expired messages on each request
 
     if request.method == 'POST':
+        if not request.user.profile.is_approved:
+            messages.error(request, 'Account awaiting approval.')
+            return redirect('chat:direct')
         form = DirectMessageForm(request.POST)
         if form.is_valid():
             recipient_username = form.cleaned_data['recipient']
@@ -66,7 +72,7 @@ def direct(request):
                         'type': 'dm.message',
                         'message': {
                             'user': request.user.username,
-                            'content': dm.content,
+                            'content': dm.content_plain,
                         },
                     },
                 )
@@ -78,10 +84,9 @@ def direct(request):
     q = request.GET.get('q')
     messages_qs = DirectMessage.objects.filter(
         Q(sender=request.user) | Q(recipient=request.user)
-    ).select_related('sender', 'recipient')
+    ).select_related('sender', 'recipient').order_by('-created_at')[:50]
     if q:
-        messages_qs = messages_qs.filter(content__icontains=q)
-    messages_qs = messages_qs.order_by('-created_at')[:50]
+        messages_qs = [m for m in messages_qs if q.lower() in m.content_plain.lower()]
 
     return render(request, 'chat/dm.html', {'form': form, 'messages': messages_qs, 'query': q})
 
@@ -102,7 +107,7 @@ def register(request):
 
 @login_required
 def profile(request):
-    """Allow the user to update their avatar."""
+    """Allow the user to update their profile."""
     profile_obj = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile_obj)
@@ -114,3 +119,12 @@ def profile(request):
         form = ProfileForm(instance=profile_obj)
 
     return render(request, 'chat/profile.html', {'form': form})
+
+
+@login_required
+def profile_detail(request, username):
+    """Display another user's profile."""
+    from django.shortcuts import get_object_or_404
+    user = get_object_or_404(User, username=username)
+    profile_obj = get_object_or_404(Profile, user=user)
+    return render(request, 'chat/profile_detail.html', {'profile': profile_obj})

@@ -18,8 +18,11 @@ after two days.
 - ✅ Message search and filtering
 - ✅ Neighborhood help offers on an interactive map
 - ✅ Share offers directly in the chat
-- ✅ User profiles with optional avatars
+- ✅ User profiles with optional avatars, bio and contact info
 - ✅ Automated tests and GitHub Actions CI
+- ✅ Admin approval required before posting
+- ✅ Encrypted direct messages and profile data
+- ✅ Customizable help offer categories via `OFFER_CATEGORIES`
 
 ## Installation on Ubuntu
 
@@ -39,14 +42,21 @@ after two days.
    ```
 4. Open <http://127.0.0.1:8000> in your browser and register a user.
 
-The default configuration uses SQLite for simplicity.  To use MariaDB or
-another database backend, adjust `DATABASES` in `village/settings.py` and
-install the appropriate driver.
+The default configuration uses SQLite for easy local development.  To deploy
+with MariaDB (social features) and PostgreSQL/PostGIS (geodata), set the
+environment variable `USE_SQLITE=0` and provide database credentials via the
+`MYSQL_*` and `POSTGRES_*` environment variables.  Direct messages and profile
+fields are encrypted using a key derived from `SECRET_KEY`.
+
+To adapt the list of help categories for your village, edit the
+`OFFER_CATEGORIES` setting in `village/settings.py`.
 
 ## Managing Content
 
 - Visit <http://127.0.0.1:8000/admin/> to access Django's admin interface.
   Create a superuser with `python manage.py createsuperuser` for full access.
+  New users must be marked as approved in the Profile section before they can
+  post in chat or create offers.
 - Messages older than two days are cleaned up automatically each time the
   direct message view is accessed.
 - Create help offers via the Offers page and share them in chat.
